@@ -4,12 +4,13 @@ import com.blogs.app.entity.Post;
 import com.blogs.app.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+@Component
 public class DataSeeder implements CommandLineRunner {
 
-    @Autowired
     private final PostRepository postRepository;
 
     public DataSeeder(PostRepository postRepository) {
