@@ -1,20 +1,17 @@
 package com.blogs.app;
 
 import com.blogs.app.entity.Post;
-import com.blogs.app.repository.PostRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.blogs.app.service.PostService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
 
-    private final PostRepository postRepository;
+    private final PostService postService;
 
-    public DataSeeder(PostRepository postRepository) {
-        this.postRepository = postRepository;
+    public DataSeeder(PostService postService) {
+        this.postService = postService;
     }
 
     @Override
@@ -22,10 +19,8 @@ public class DataSeeder implements CommandLineRunner {
         Post post = new Post();
         post.setTitle("My First Blog Post");
         post.setBody("This is just test data to prove saving works.");
-        post.setCreatedAt(LocalDateTime.now());
-        post.setUpdatedAt(LocalDateTime.now());
 
-        postRepository.save(post);
+        postService.createPost(post);
 
         System.out.println("Seeded a post with id: " + post.getId());
     }
