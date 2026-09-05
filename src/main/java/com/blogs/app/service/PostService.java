@@ -1,6 +1,7 @@
 package com.blogs.app.service;
 
 import com.blogs.app.entity.Post;
+import com.blogs.app.exception.PostNotFoundException;
 import com.blogs.app.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public class PostService {
 
     public Post getPostById(Long id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found with the id: " + id));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     public Post updatePost(Long id, Post updatedPost) {
