@@ -5,10 +5,7 @@ import com.blogs.app.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,5 +31,26 @@ public class PostController {
         List<Post> posts = postService.getAllPosts();
 
         return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Post> getPostById(@PathVariable Long id) {
+        Post post = postService.getPostById(id);
+
+        return ResponseEntity.ok(post);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post) {
+        Post updatedpost = postService.updatePost(id, post);
+
+        return ResponseEntity.ok(updatedpost);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Post> deletePost(@PathVariable Long id) {
+        postService.deletePost(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
