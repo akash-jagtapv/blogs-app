@@ -30,4 +30,19 @@ public class PostService {
         return postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found with the id: " + id));
     }
+
+    public Post updatePost(Long id, Post updatedPost) {
+        Post existingPost = getPostById(id);
+
+        existingPost.setTitle(updatedPost.getTitle());
+        existingPost.setBody(updatedPost.getBody());
+        existingPost.setUpdatedAt(LocalDateTime.now());
+
+        return postRepository.save(existingPost);
+    }
+
+    public void deletePost(Long id) {
+        Post existingPost = getPostById(id);
+        postRepository.delete(existingPost);
+    }
 }
