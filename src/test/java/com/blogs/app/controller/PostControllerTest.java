@@ -1,6 +1,7 @@
 package com.blogs.app.controller;
 
 import com.blogs.app.entity.Post;
+import com.blogs.app.entity.User;
 import com.blogs.app.exception.PostNotFoundException;
 import com.blogs.app.service.PostService;
 import org.junit.jupiter.api.Test;
@@ -26,12 +27,15 @@ public class PostControllerTest {
 
     @Test
     void getPostById_whenPostExists_returns200AndPost() throws Exception {
+        User author = new User();
+        author.setId(1L);
+        author.setUsername("akash");
+
         Post post = new Post();
         post.setId(1L);
         post.setTitle("Test Post");
         post.setBody("Test Body");
-
-        postService.createPost(post, 1L);
+        post.setAuthor(author);
 
         when(postService.getPostById(1L)).thenReturn(post);
 
