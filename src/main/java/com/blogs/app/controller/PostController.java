@@ -1,6 +1,8 @@
 package com.blogs.app.controller;
 
+import com.blogs.app.dto.*;
 import com.blogs.app.entity.Post;
+import com.blogs.app.mapper.PostMapper;
 import com.blogs.app.service.PostService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,10 +22,10 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody @Valid Post post) {
-        Post createdPost = postService.createPost(post);
+    public ResponseEntity<PostResponse> createPost(@Valid @RequestBody CreatePostRequest request, @RequestHeader("X-User-Id") Long requestingUserId) {
+        Post createdPost = postService.createPost(PostMapper.toEntity(request), requestingUserId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
+        return ResponseEntity.status(HttpStatus.CREATED).body(PostMapper.toResponse(createdPost));
     }
 
     @GetMapping

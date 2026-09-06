@@ -1,9 +1,10 @@
 package com.blogs.app.service;
 
 import com.blogs.app.entity.Post;
-import com.blogs.app.exception.PostNotFoundException;
-import com.blogs.app.exception.UnauthorizedActionException;
+import com.blogs.app.entity.User;
+import com.blogs.app.exception.*;
 import com.blogs.app.repository.PostRepository;
+import com.blogs.app.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,13 +14,20 @@ import java.util.List;
 public class PostService {
     private final PostRepository postRepository;
 
-    public PostService(PostRepository postRepository) {
+    private final UserRepository userRepository;
+
+    public PostService(PostRepository postRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
-    public Post createPost(Post post) {
+    public Post createPost(Post post, Long requestingUserId) {
+        User foundUser = userRepository.findById(requestingUserId)
+                        .orElseThrow(() -> new UserNotFoundException(requestingUserId));
+
         post.setCreatedAt(LocalDateTime.now());
         post.setUpdatedAt(LocalDateTime.now());
+        post.setAuthor(foundUser);
 
         return postRepository.save(post);
     }

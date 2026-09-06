@@ -31,7 +31,7 @@ public class PostControllerTest {
         post.setTitle("Test Post");
         post.setBody("Test Body");
 
-        postService.createPost(post);
+        postService.createPost(post, 1L);
 
         when(postService.getPostById(1L)).thenReturn(post);
 

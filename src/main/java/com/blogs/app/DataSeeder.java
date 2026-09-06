@@ -36,7 +36,7 @@ public class DataSeeder implements CommandLineRunner {
         post.setBody("This is just test data to prove saving works.");
         post.setAuthor(author);
 
-        postService.createPost(post);
+        postService.createPost(post, author.getId());
 
         System.out.println("Seeded a post with id: " + post.getId());
     }

@@ -32,6 +32,18 @@ public class GlobalExceptionHandler {
                 "message", ex.getMessage()
         );
 
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleUserNotFound(UserNotFoundException ex) {
+        Map<String, Object> body = Map.of(
+                "timestamp", LocalDateTime.now().toString(),
+                "status", HttpStatus.NOT_FOUND.value(),
+                "error", "Not Found",
+                "message", ex.getMessage()
+        );
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 }
