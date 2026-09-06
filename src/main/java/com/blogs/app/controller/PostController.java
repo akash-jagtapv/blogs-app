@@ -2,6 +2,7 @@ package com.blogs.app.controller;
 
 import com.blogs.app.entity.Post;
 import com.blogs.app.service.PostService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post post) {
+    public ResponseEntity<Post> createPost(@RequestBody @Valid Post post) {
         Post createdPost = postService.createPost(post);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
@@ -40,7 +41,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post, @RequestHeader("X-User-Id") Long requestingUserId) {
+    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody @Valid Post post, @RequestHeader("X-User-Id") Long requestingUserId) {
         Post updatedpost = postService.updatePost(id, post, requestingUserId);
 
         return ResponseEntity.ok(updatedpost);
