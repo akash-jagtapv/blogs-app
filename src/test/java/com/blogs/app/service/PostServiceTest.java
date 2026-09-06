@@ -64,7 +64,6 @@ public class PostServiceTest {
         existingPost.setAuthor(author);
 
         UpdatePostRequest updateRequest = new UpdatePostRequest();
-        PostMapper.updateEntity(existingPost, updateRequest);
 
         when(postRepository.findById(1L)).thenReturn(Optional.of(existingPost));
 
