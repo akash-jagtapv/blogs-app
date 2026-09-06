@@ -4,12 +4,11 @@ import com.blogs.app.entity.Post;
 import com.blogs.app.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/posts")
 public class PostController {
 
@@ -42,7 +41,7 @@ public class PostController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post, @RequestHeader("X-User-Id") Long requestingUserId) {
-        Post updatedpost = postService.updatePost(id, post, post.getAuthor().getId());
+        Post updatedpost = postService.updatePost(id, post, requestingUserId);
 
         return ResponseEntity.ok(updatedpost);
     }
