@@ -2,6 +2,7 @@ package com.blogs.app.service;
 
 import com.blogs.app.entity.Post;
 import com.blogs.app.exception.PostNotFoundException;
+import com.blogs.app.exception.UnauthorizedActionException;
 import com.blogs.app.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +33,12 @@ public class PostService {
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
 
-    public Post updatePost(Long id, Post updatedPost) {
+    public Post updatePost(Long id, Post updatedPost, Long requestingUserId) {
         Post existingPost = getPostById(id);
+
+        if(!requestingUserId.equals(existingPost.getAuthor().getId())) {
+            throw new UnauthorizedActionException("User is not the authorized to update this post");
+        }
 
         existingPost.setTitle(updatedPost.getTitle());
         existingPost.setBody(updatedPost.getBody());
@@ -42,8 +47,12 @@ public class PostService {
         return postRepository.save(existingPost);
     }
 
-    public void deletePost(Long id) {
+    public void deletePost(Long id, Long requestingUserId) {
         Post existingPost = getPostById(id);
+
+        if(!requestingUserId.equals(existingPost.getAuthor().getId())) {
+            throw new UnauthorizedActionException("User is not Authorized to delete this Post");
+        }
         postRepository.delete(existingPost);
     }
 }
