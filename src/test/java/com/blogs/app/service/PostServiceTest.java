@@ -1,7 +1,9 @@
 package com.blogs.app.service;
 
 import com.blogs.app.entity.Post;
+import com.blogs.app.entity.User;
 import com.blogs.app.exception.PostNotFoundException;
+import com.blogs.app.exception.UnauthorizedActionException;
 import com.blogs.app.repository.PostRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,5 +45,89 @@ public class PostServiceTest {
 
         assertThatThrownBy(() -> postService.getPostById(999L))
                 .isInstanceOf(PostNotFoundException.class);
+    }
+
+    @Test
+    void updatePost_whenRequestingUserIsNotAuthor_throwsUnauthorizedException() {
+        User author = new User();
+        author.setId(1L);
+
+        Post existingPost = new Post();
+        existingPost.setId(1L);
+        existingPost.setTitle("Original Title");
+        existingPost.setAuthor(author);
+
+        Post updateRequest = new Post();
+        updateRequest.setTitle("Hacked Title");
+
+        when(postRepository.findById(1L)).thenReturn(Optional.of(existingPost));
+
+        PostService postService = new PostService(postRepository);
+
+        assertThatThrownBy(() -> postService.updatePost(1L, updateRequest, 2L))
+                .isInstanceOf(UnauthorizedActionException.class);
+    }
+
+    @Test
+    void updatePost_whenRequestingUserIsAuthor_updatesSuccessfully() {
+        User author = new User();
+        author.setId(1L);
+
+        Post existingPost = new Post();
+        existingPost.setId(1L);
+        existingPost.setTitle("Original Title");
+        existingPost.setBody("Original Body");
+        existingPost.setAuthor(author);
+
+        Post updateRequest = new Post();
+        updateRequest.setTitle("Updated Title");
+        updateRequest.setBody("Updated Body");
+
+        when(postRepository.findById(1L)).thenReturn(Optional.of(existingPost));
+        when(postRepository.save(any(Post.class))).thenReturn(existingPost);
+
+        PostService postService = new PostService(postRepository);
+
+        Post result = postService.updatePost(1L, updateRequest, 1L);
+
+        assertThat(result.getTitle()).isEqualTo("Updated Title");
+        assertThat(result.getBody()).isEqualTo("Updated Body");
+    }
+
+    @Test
+    void deletePost_whenRequestingUserIsNotAuthor_throwsUnauthorizedException() {
+        User author = new User();
+        author.setId(1L);
+
+        Post existingPost = new Post();
+        existingPost.setId(1L);
+        existingPost.setTitle("Original Title");
+        existingPost.setAuthor(author);
+
+        when(postRepository.findById(1L)).thenReturn(Optional.of(existingPost));
+
+        PostService postService = new PostService(postRepository);
+
+        assertThatThrownBy(() -> postService.deletePost(1L, 2L))
+                .isInstanceOf(UnauthorizedActionException.class);
+    }
+
+    @Test
+    void deletePost_whenRequestingUserIsAuthor_deletesSuccessfully() {
+        User author = new User();
+        author.setId(1L);
+
+        Post existingPost = new Post();
+        existingPost.setId(1L);
+        existingPost.setTitle("Original Title");
+        existingPost.setAuthor(author);
+
+        when(postRepository.findById(1L)).thenReturn(Optional.of(existingPost));
+
+        PostService postService = new PostService(postRepository);
+
+        postService.deletePost(1L, 1L);
+
+        verify(postRepository).delete(existingPost);
     }
 }
