@@ -7,25 +7,17 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "users")
 @Getter
 @Setter
-public class Post {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
-
-    @Column(length = 5000)
-    private String body;
+    @Column(name = "username", unique = true, nullable = false)
+    private String username;
 
     private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
 }
