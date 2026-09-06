@@ -1,8 +1,10 @@
 package com.blogs.app.service;
 
+import com.blogs.app.dto.UpdatePostRequest;
 import com.blogs.app.entity.Post;
 import com.blogs.app.entity.User;
 import com.blogs.app.exception.*;
+import com.blogs.app.mapper.PostMapper;
 import com.blogs.app.repository.PostRepository;
 import com.blogs.app.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -41,15 +43,14 @@ public class PostService {
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
 
-    public Post updatePost(Long id, Post updatedPost, Long requestingUserId) {
+    public Post updatePost(Long id, UpdatePostRequest request, Long requestingUserId) {
         Post existingPost = getPostById(id);
 
         if(!requestingUserId.equals(existingPost.getAuthor().getId())) {
             throw new UnauthorizedActionException("User is not the authorized to update this post");
         }
 
-        existingPost.setTitle(updatedPost.getTitle());
-        existingPost.setBody(updatedPost.getBody());
+        PostMapper.updateEntity(existingPost, request);
         existingPost.setUpdatedAt(LocalDateTime.now());
 
         return postRepository.save(existingPost);

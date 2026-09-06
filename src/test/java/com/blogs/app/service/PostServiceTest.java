@@ -1,10 +1,13 @@
 package com.blogs.app.service;
 
+import com.blogs.app.dto.UpdatePostRequest;
 import com.blogs.app.entity.Post;
 import com.blogs.app.entity.User;
 import com.blogs.app.exception.PostNotFoundException;
 import com.blogs.app.exception.UnauthorizedActionException;
+import com.blogs.app.mapper.PostMapper;
 import com.blogs.app.repository.PostRepository;
+import com.blogs.app.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -23,6 +26,9 @@ public class PostServiceTest {
     @Mock
     private PostRepository postRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
     @Test
     void getPostById_whenPostExists_returnsPost() {
         Post post = new Post();
@@ -31,7 +37,7 @@ public class PostServiceTest {
 
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 
-        PostService postService = new PostService(postRepository);
+        PostService postService = new PostService(postRepository, userRepository);
         Post result = postService.getPostById(1L);
 
         assertThat(result.getTitle()).isEqualTo("Test Post");
@@ -41,7 +47,7 @@ public class PostServiceTest {
     void getPostById_whenPostDoesNotExist_throwsException() {
         when(postRepository.findById(999L)).thenReturn(Optional.empty());
 
-        PostService postService = new PostService(postRepository);
+        PostService postService = new PostService(postRepository, userRepository);
 
         assertThatThrownBy(() -> postService.getPostById(999L))
                 .isInstanceOf(PostNotFoundException.class);
@@ -57,12 +63,12 @@ public class PostServiceTest {
         existingPost.setTitle("Original Title");
         existingPost.setAuthor(author);
 
-        Post updateRequest = new Post();
-        updateRequest.setTitle("Hacked Title");
+        UpdatePostRequest updateRequest = new UpdatePostRequest();
+        PostMapper.updateEntity(existingPost, updateRequest);
 
         when(postRepository.findById(1L)).thenReturn(Optional.of(existingPost));
 
-        PostService postService = new PostService(postRepository);
+        PostService postService = new PostService(postRepository, userRepository);
 
         assertThatThrownBy(() -> postService.updatePost(1L, updateRequest, 2L))
                 .isInstanceOf(UnauthorizedActionException.class);
@@ -79,14 +85,13 @@ public class PostServiceTest {
         existingPost.setBody("Original Body");
         existingPost.setAuthor(author);
 
-        Post updateRequest = new Post();
-        updateRequest.setTitle("Updated Title");
-        updateRequest.setBody("Updated Body");
+        UpdatePostRequest updateRequest = new UpdatePostRequest();
+        PostMapper.updateEntity(existingPost, updateRequest);
 
         when(postRepository.findById(1L)).thenReturn(Optional.of(existingPost));
         when(postRepository.save(any(Post.class))).thenReturn(existingPost);
 
-        PostService postService = new PostService(postRepository);
+        PostService postService = new PostService(postRepository, userRepository);
 
         Post result = postService.updatePost(1L, updateRequest, 1L);
 
@@ -106,7 +111,7 @@ public class PostServiceTest {
 
         when(postRepository.findById(1L)).thenReturn(Optional.of(existingPost));
 
-        PostService postService = new PostService(postRepository);
+        PostService postService = new PostService(postRepository, userRepository);
 
         assertThatThrownBy(() -> postService.deletePost(1L, 2L))
                 .isInstanceOf(UnauthorizedActionException.class);
@@ -124,7 +129,7 @@ public class PostServiceTest {
 
         when(postRepository.findById(1L)).thenReturn(Optional.of(existingPost));
 
-        PostService postService = new PostService(postRepository);
+        PostService postService = new PostService(postRepository, userRepository);
 
         postService.deletePost(1L, 1L);
 

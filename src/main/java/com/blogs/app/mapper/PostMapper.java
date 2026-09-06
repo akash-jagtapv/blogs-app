@@ -1,7 +1,6 @@
 package com.blogs.app.mapper;
 
-import com.blogs.app.dto.CreatePostRequest;
-import com.blogs.app.dto.PostResponse;
+import com.blogs.app.dto.*;
 import com.blogs.app.entity.Post;
 
 public class PostMapper {
@@ -26,5 +25,10 @@ public class PostMapper {
         post.setBody(request.getBody());
 
         return post;
+    }
+
+    public static void updateEntity(Post existingPost, UpdatePostRequest request) {
+        existingPost.setTitle(request.getTitle());
+        existingPost.setBody(request.getBody());
     }
 }

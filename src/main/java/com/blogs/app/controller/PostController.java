@@ -29,24 +29,24 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Post>> getAllPosts() {
+    public ResponseEntity<List<PostResponse>> getAllPosts() {
         List<Post> posts = postService.getAllPosts();
 
-        return ResponseEntity.ok(posts);
+        return ResponseEntity.ok(posts.stream().map(PostMapper::toResponse).toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable Long id) {
+    public ResponseEntity<PostResponse> getPostById(@PathVariable Long id) {
         Post post = postService.getPostById(id);
 
-        return ResponseEntity.ok(post);
+        return ResponseEntity.ok(PostMapper.toResponse(post));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody @Valid Post post, @RequestHeader("X-User-Id") Long requestingUserId) {
-        Post updatedpost = postService.updatePost(id, post, requestingUserId);
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long id, @Valid @RequestBody UpdatePostRequest request, @RequestHeader("X-User-Id") Long requestingUserId) {
+        Post updatedPost = postService.updatePost(id, request, requestingUserId);
 
-        return ResponseEntity.ok(updatedpost);
+        return ResponseEntity.ok(PostMapper.toResponse(updatedPost));
     }
 
     @DeleteMapping("/{id}")
