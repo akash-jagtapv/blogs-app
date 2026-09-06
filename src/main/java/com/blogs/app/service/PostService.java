@@ -51,7 +51,7 @@ public class PostService {
         Post existingPost = getPostById(id);
 
         if(!requestingUserId.equals(existingPost.getAuthor().getId())) {
-            throw new UnauthorizedActionException("User is not Authorized to delete this Post");
+            throw new UnauthorizedActionException("User is not authorized to delete this post");
         }
         postRepository.delete(existingPost);
     }
